@@ -55,9 +55,11 @@ const Home: React.FC = () => {
       />
 
       {/* Result cards */}
-      {animes.map((anime) => (
-        <AnimeCard key={anime.mal_id} anime={anime} />
-      ))}
+      <div className="grid-container">
+    {animes.map((a) => (
+      <AnimeCard key={a.mal_id} anime={a} />
+    ))}
+  </div>
 
       {/* Pagination controls (server-side) */}
       {totalPages > 1 && (

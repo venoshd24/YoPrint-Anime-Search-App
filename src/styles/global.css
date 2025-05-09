@@ -1,69 +1,145 @@
-/* Light “gallery” theme */
+:root {
+  /* Accent palette */
+  --accent-1: #ff6f61;   /* coral */
+  --accent-2: #f9a825;   /* sunshine yellow */
+  --accent-3: #42a5f5;   /* sky blue */
+  --accent-4: #ab47bc;   /* orchid purple */
+  --accent-5: #26a69a;   /* teal green */
+}
+
+/* Base page styling */
 html, body {
   margin: 0;
   padding: 0;
   font-family: 'Inter', sans-serif;
-  background-color: #f9f9fb;     /* very pale lavender/gray */
-  color: #23303e;                /* deep, soft charcoal */
+  background-color: #e1e3e6;   /* darker pale grey */
+  color: #1e242e;              /* deep charcoal */
 }
 
-/* Links & accents */
+/* Link accents */
 a {
-  color: #ff6f61;                /* coral accent */
+  color: var(--accent-1);
+  transition: color 0.2s ease;
 }
 a:hover {
-  color: #e65b50;
+  color: var(--accent-2);
 }
 
-/* Container headings */
+/* Section heading with gradient text */
 .container h4 {
   text-align: center;
   margin-bottom: 2rem;
   font-size: 2.25rem;
   font-weight: 600;
-  color: #2b3a4b;
+  background: linear-gradient(
+    90deg,
+    var(--accent-1),
+    var(--accent-2),
+    var(--accent-3)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Search bar */
 .MuiOutlinedInput-root {
-  background: #ffffff;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  background: #eceff4;          /* light steel */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+/* Gradient border on focus/hover */
+.MuiOutlinedInput-root fieldset {
+  border: 2px solid transparent;
+  border-image: linear-gradient(45deg, var(--accent-3), var(--accent-5)) 1;
+  transition: border-image 0.3s ease;
+}
+.MuiOutlinedInput-root:hover fieldset,
+.MuiOutlinedInput-root.Mui-focused fieldset {
+  border-image: linear-gradient(45deg, var(--accent-4), var(--accent-2)) 1;
 }
 
-/* Anime cards */
+/* Grid container for fixed-width, fixed-height tiles */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+  grid-auto-rows: 350px;       /* enforce a uniform tile height */
+  gap: 1.5rem;
+  justify-items: center;
+  padding: 1rem 0;
+}
+
+/* Tile-style anime card fills its grid cell */
 .animeCard {
+  position: relative;
   display: flex;
-  margin-bottom: 1.25rem;
-  background: #ffffff;
+  flex-direction: column;
+  width: 225px;                /* fixed tile width */
+  height: 100%;                /* stretch to fill the 350px row */
+  background: #f4f6f8;         /* slightly darker white */
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+/* Top accent bar by tile index */
+.animeCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 4px;
+  background: var(--accent-1);
+  transition: background 0.3s ease;
+}
+.grid-container .animeCard:nth-child(5n+1)::before { background: var(--accent-1); }
+.grid-container .animeCard:nth-child(5n+2)::before { background: var(--accent-2); }
+.grid-container .animeCard:nth-child(5n+3)::before { background: var(--accent-3); }
+.grid-container .animeCard:nth-child(5n+4)::before { background: var(--accent-4); }
+.grid-container .animeCard:nth-child(5n+5)::before { background: var(--accent-5); }
+
+/* Hover lift & glow */
 .animeCard:hover {
   transform: translateY(-6px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.12),
+    0 0 10px var(--accent-3);
 }
+
+/* Poster image takes up 50% of the tile height */
 .animeCard img {
-  width: 120px;
+  width: 100%;
+  height: 50%;
   object-fit: cover;
   filter: brightness(0.95);
 }
+
+/* Content area fills the rest and clamps text */
 .animeCard .MuiCardContent-root {
+  flex: 1;
   padding: 1rem;
+  overflow: hidden;
+}
+.animeCard .MuiTypography-body2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;       /* show only 3 lines of synopsis */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-/* Pagination */
+/* Pagination styling */
 .MuiPagination-root {
   display: flex;
   justify-content: center;
   padding-top: 1.5rem;
 }
 .MuiPaginationItem-root {
-  color: #4a5a6a;
+  color: var(--accent-2);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 .MuiPaginationItem-root.Mui-selected {
-  background-color: #ff6f61;
+  background-color: var(--accent-4);
+  color: #fff;
+}
+.MuiPaginationItem-root:hover {
+  background-color: var(--accent-5);
   color: #fff;
 }
