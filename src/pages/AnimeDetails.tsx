@@ -92,7 +92,7 @@ const AnimeDetails: React.FC = () => {
         <div className="stat-card">
           <div className="value">{anime.score?.toFixed(2)}</div>
           <div className="label">
-            {anime.scored_by?.toLocaleString()} users
+          <div className="label">Score</div>
           </div>
         </div>
         {/* Rank card */}
@@ -104,13 +104,6 @@ const AnimeDetails: React.FC = () => {
         <div className="stat-card">
           <div className="value">#{anime.popularity}</div>
           <div className="label">Popularity</div>
-        </div>
-        {/* Members card */}
-        <div className="stat-card">
-          <div className="value">
-            {anime.members?.toLocaleString()}
-          </div>
-          <div className="label">Members</div>
         </div>
       </div>
     </Container>
