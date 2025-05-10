@@ -1,72 +1,116 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Container, Typography } from '@mui/material';
-import SearchBar from '../components/SearchBar';
-import AnimeCard from '../components/AnimeCard';
-import Pagination from '../components/Pagination';
-import { searchAnime } from '../utils/api';
-import { debounce } from '../utils/debounce';
+import React, { useEffect } from 'react'
+import { Container, Typography, Skeleton, Box } from '@mui/material'
+import SearchBar from '../components/SearchBar'
+import AnimeCard from '../components/AnimeCard'
+import Pagination from '../components/Pagination'
+import { searchAnime } from '../utils/api'
 
-/**
- * Home
- * Renders the search input, anime result cards, and pagination controls.
- */
+// Redux hooks + actions
+import { useSelector, useDispatch } from 'react-redux'
+import type { RootState, AppDispatch } from '../store'
+import {
+  setQuery,
+  setPage,
+  fetchStart,
+  fetchSuccess,
+  fetchFailure,
+} from '../features/searchSlice'
+
 const Home: React.FC = () => {
-  const [query, setQuery] = useState('');        // Current search query
-  const [animes, setAnimes] = useState<any[]>([]); // Anime results list
-  const [page, setPage] = useState(1);            // Current pagination page
-  const [totalPages, setTotalPages] = useState(1);// Total pages from API
+  const dispatch = useDispatch<AppDispatch>()
+  const { query, page, results: animes, totalPages, loading, error } =
+    useSelector((state: RootState) => state.search)
 
-  /**
-   * fetchAnimes
-   * Fetches anime results based on query and page.
-   * Clears results if query is empty.
-   */
-  const fetchAnimes = useCallback(
-    async (q: string, p: number) => {
-      if (!q) {
-        setAnimes([]);
-        return;
-      }
-      const data = await searchAnime(q, p);
-      setAnimes(data.data);
-      setTotalPages(data.pagination.last_visible_page);
-    },
-    []
-  );
-
-  // Debounce fetchAnimes by 250ms to avoid rapid API calls
-  const debouncedFetch = useCallback(debounce(fetchAnimes, 250), [fetchAnimes]);
-
-  // Trigger API call when query or page changes
+  // Whenever query or page changes, trigger the search (with 250ms debounce)
   useEffect(() => {
-    debouncedFetch(query, page);
-  }, [query, page, debouncedFetch]);
+    if (!query) {
+      dispatch(fetchSuccess({ results: [], totalPages: 1 }))
+      return
+    }
+
+    dispatch(fetchStart())
+    const timer = setTimeout(async () => {
+      try {
+        const data = await searchAnime(query, page)
+        dispatch(
+          fetchSuccess({
+            results: data.data,
+            totalPages: data.pagination.last_visible_page,
+          })
+        )
+      } catch (err) {
+        dispatch(fetchFailure((err as Error).message))
+      }
+    }, 250)
+
+    return () => clearTimeout(timer)
+  }, [dispatch, query, page])
 
   return (
-    <Container className="container">
+    <Container className="container" sx={{ pt: 4 }}>
       <Typography variant="h4" gutterBottom>
         Anime Search
       </Typography>
 
-      {/* Search input field: controlled component */}
       <SearchBar
         value={query}
-        onChange={(e) => { setPage(1); setQuery(e.target.value); }}
+        onChange={(e) => {
+          dispatch(setQuery(e.target.value))
+          dispatch(setPage(1))
+        }}
       />
 
-      {/* Result cards */}
-      <div className="grid-container">
-    {animes.map((a) => (
-      <AnimeCard key={a.mal_id} anime={a} />
-    ))}
-  </div>
+      {/* Error message */}
+      {error && (
+        <Typography color="error" sx={{ mt: 2 }}>
+          {error}
+        </Typography>
+      )}
 
-      {/* Pagination controls (server-side) */}
+      {/* Results or Loading Skeletons */}
+      {loading ? (
+        // Show 8 skeleton tiles while loading
+        <Box className="grid-container">
+          {Array.from({ length: 8 }).map((_, idx) => (
+            <Box
+              key={idx}
+              className="animeCard"
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: 225,
+                height: '100%',
+              }}
+            >
+              {/* Poster placeholder */}
+              <Skeleton variant="rectangular" width="100%" height="50%" />
+              {/* Title line */}
+              <Skeleton variant="text" width="60%" sx={{ mt: 1 }} />
+              {/* Synopsis lines */}
+              <Skeleton variant="text" width="80%" />
+              <Skeleton variant="text" width="80%" />
+            </Box>
+          ))}
+        </Box>
+      ) : (
+        // Show real results
+        <Box className="grid-container">
+          {animes.map((a) => (
+            <AnimeCard key={a.mal_id} anime={a} />
+          ))}
+        </Box>
+      )}
+
+      {/* Pagination controls */}
       {totalPages > 1 && (
-        <Pagination page={page} count={totalPages} onChange={(_, v) => setPage(v)} />
+        <Pagination
+          page={page}
+          count={totalPages}
+          onChange={(_, v) => dispatch(setPage(v))}
+        />
       )}
     </Container>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

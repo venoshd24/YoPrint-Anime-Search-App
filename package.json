@@ -9,18 +9,20 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-router-dom": "^6.11.2",
-    "@mui/material": "^5.12.3",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@mui/material": "^5.12.3",
+    "@reduxjs/toolkit": "^2.8.1",
     "axios": "^1.1.3",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^6.11.2",
     "react-scripts": "5.0.1"
   },
   "devDependencies": {
-  "@types/react-dom": "^18.2.0"
-},
+    "@types/react-dom": "^18.2.0"
+  },
   "browserslist": {
     "production": [
       ">0.2%",

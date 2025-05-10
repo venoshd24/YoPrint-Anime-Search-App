@@ -9,11 +9,13 @@ import AnimeDetails from './pages/AnimeDetails';
  */
 const App: React.FC = () => (
   <Routes>
-    {/* Home page route */}
+    {/* 
+      1) "/" → Home search page 
+      2) "/anime/:id" → Details page, reads the `id` param 
+      3) Any other path → Redirect back to home 
+    */}
     <Route path="/" element={<Home />} />
-    {/* Dynamic anime details route */}
     <Route path="/anime/:id" element={<AnimeDetails />} />
-    {/* Fallback to Home for unknown paths */}
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>
 );

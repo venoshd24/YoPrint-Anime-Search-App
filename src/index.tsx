@@ -1,17 +1,23 @@
 import React from 'react';
-import ReactDOMClient from 'react-dom/client';
+import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux';          // ← import Provider
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
-import './styles/global.css';  // Global styles moved into styles folder
+import { store } from './store';                // ← import your store
+import './styles/global.css';
 
-// Create React root and wrap App in BrowserRouter for routing
-const root = ReactDOMClient.createRoot(
+const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />  {/* Main app with defined routes */}
-    </BrowserRouter>
+    {/* 1) Provide the Redux store to the entire app */}
+    <Provider store={store}>
+      {/* 2) Then wrap with BrowserRouter for routing */}
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>
 );

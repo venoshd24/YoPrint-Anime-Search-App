@@ -143,3 +143,78 @@ a:hover {
   background-color: var(--accent-5);
   color: #fff;
 }
+
+/* ===================== DETAILS PAGE LAYOUT ===================== */
+
+/* 1. Center the whole details section & cap its width */
+.details-container {
+  max-width: 1200px;
+  margin: 2rem auto;      /* auto-center + vertical spacing */
+  padding: 0 1rem;        /* horizontal breathing room */
+}
+
+/* 2. Two-column grid: poster + synopsis */
+.details-grid {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 2rem;             /* space between image & text */
+  align-items: start;
+  margin-bottom: 2rem;
+}
+
+/* 3. Poster styling */
+.details-img {
+  width: 150px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 4. Synopsis text */
+.details-content h2 {
+  margin: 0 0 1rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #1a202c;
+}
+.details-content p {
+  line-height: 1.6;
+  color: #333;
+}
+
+/* ===================== STAT CARDS ROW ===================== */
+
+/* 5. Stats wrapper: flex row, equal gaps */
+.stats-container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* 6. Individual stat cards */
+.stat-card {
+  flex: 0 0 150px;      /* fixed 150px width */
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 0.75rem;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+/* 7. Stat value & label */
+.stat-card .value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: var(--accent-3);
+}
+.stat-card .label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #666;
+}

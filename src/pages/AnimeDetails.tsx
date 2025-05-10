@@ -1,35 +1,118 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Container, Typography, CardMedia } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+// useParams to grab the MAL ID from the URL, useNavigate for the “Back” button
+import { useParams, useNavigate } from 'react-router-dom';
+// MUI components for layout & styling
+import {
+  Container,
+  Typography,
+  CardMedia,
+  Button,
+} from '@mui/material';
+// Your API helper for fetching full anime details
 import { getAnimeDetails } from '../utils/api';
 
 /**
  * AnimeDetails
- * Displays detailed information for a single anime based on URL param.
+ *
+ * Fetches and displays the full details for one anime,
+ * based on the `id` URL parameter (MAL ID).
  */
 const AnimeDetails: React.FC = () => {
-  const { id } = useParams<{ id: string }>();  // Get MAL ID from route params
-  const [anime, setAnime] = useState<any>(null); // Anime detail state
+  // Pull `id` from /anime/:id
+  const { id } = useParams<{ id: string }>();
+  // For programmatic back navigation
+  const navigate = useNavigate();
 
-  // Fetch anime details when component mounts or ID changes
+  // Local state to hold the fetched anime data
+  const [anime, setAnime] = useState<any>(null);
+  // Loading state if you wanted to show a spinner (optional)
+  const [loading, setLoading] = useState<boolean>(true);
+
   useEffect(() => {
-    if (id) {
-      getAnimeDetails(id).then((res) => setAnime(res.data));
-    }
+    if (!id) return;
+
+    // Kick off the fetch
+    getAnimeDetails(id)
+      .then((res) => {
+        setAnime(res.data);  // store the API’s `data` object
+      })
+      .catch((err) => {
+        console.error('Failed to fetch anime details:', err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [id]);
 
-  if (!anime) return <Typography>Loading...</Typography>;
+  // While data is loading, you can show a placeholder
+  if (loading) {
+    return <Typography>Loading details…</Typography>;
+  }
+
+  // If no anime was found (e.g. invalid ID), show a friendly message
+  if (!anime) {
+    return <Typography>Anime not found.</Typography>;
+  }
 
   return (
-    <Container className="container details">
-      <Typography variant="h3" gutterBottom>{anime.title}</Typography>
-      <CardMedia
-        component="img"
-        image={anime.images.jpg.large_image_url}
-        alt={anime.title}
-        sx={{ maxWidth: 600, mb: 2 }}
-      />
-      <Typography variant="body1">{anime.synopsis}</Typography>
+    <Container className="details-container">
+      {/* Two-column layout: poster on left, synopsis on right */}
+      <div className="details-grid">
+        {/* Poster image */}
+        <div className="details-img">
+          <CardMedia
+            component="img"
+            image={anime.images.jpg.large_image_url}
+            alt={anime.title}
+          />
+        </div>
+
+        {/* Synopsis block */}
+        <div className="details-content">
+          <Typography variant="h2" gutterBottom>
+            Synopsis
+          </Typography>
+          <Typography variant="body1">{anime.synopsis}</Typography>
+        </div>
+      </div>
+
+      {/* Back button to return to previous page */}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => navigate(-1)}
+        sx={{ mb: 3 }}
+      >
+        ← Back
+      </Button>
+
+      {/* Stats row: score, rank, popularity, members */}
+      <div className="stats-container">
+        {/* Score card */}
+        <div className="stat-card">
+          <div className="value">{anime.score?.toFixed(2)}</div>
+          <div className="label">
+            {anime.scored_by?.toLocaleString()} users
+          </div>
+        </div>
+        {/* Rank card */}
+        <div className="stat-card">
+          <div className="value">#{anime.rank}</div>
+          <div className="label">Ranked</div>
+        </div>
+        {/* Popularity card */}
+        <div className="stat-card">
+          <div className="value">#{anime.popularity}</div>
+          <div className="label">Popularity</div>
+        </div>
+        {/* Members card */}
+        <div className="stat-card">
+          <div className="value">
+            {anime.members?.toLocaleString()}
+          </div>
+          <div className="label">Members</div>
+        </div>
+      </div>
     </Container>
   );
 };
