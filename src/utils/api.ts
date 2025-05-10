@@ -3,11 +3,7 @@ import axios from 'axios';
 const API_BASE = 'https://api.jikan.moe/v4';
 
 /**
- * searchAnime
- * Fetches a page of anime search results from the Jikan API.
- * @param query - User search term
- * @param page  - Page number for server-side pagination
- * @returns Promise resolving to API response containing `data` and `pagination`
+ * Search for anime by query & page.
  */
 export const searchAnime = async (query: string, page: number) => {
   const response = await axios.get(`${API_BASE}/anime`, {
@@ -17,10 +13,18 @@ export const searchAnime = async (query: string, page: number) => {
 };
 
 /**
- * getAnimeDetails
- * Fetches full details for a single anime by its MyAnimeList ID.
- * @param id - The anime's MAL ID
- * @returns Promise resolving to detailed anime data
+ * Fetch the “top” anime (by popularity/rating) for a given page.
+ * Used as the default display when query is empty.
+ */
+export const getTopAnime = async (page: number) => {
+  const response = await axios.get(`${API_BASE}/top/anime`, {
+    params: { page },
+  });
+  return response.data;
+};
+
+/**
+ * Get full details for a single anime by MAL ID.
  */
 export const getAnimeDetails = async (id: string) => {
   const response = await axios.get(`${API_BASE}/anime/${id}/full`);
